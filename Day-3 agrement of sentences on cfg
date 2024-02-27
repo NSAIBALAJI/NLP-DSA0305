@@ -1,0 +1,27 @@
+class Word:
+  def __init__(self, word, pos):
+    self.word = word
+    self.pos = pos
+def check_agreement(sentence, grammar):
+  for i, word in enumerate(sentence):
+    if word.pos in grammar:
+      # Check agreement with previous or following words based on grammar rules
+      if (i > 0 and sentence[i - 1].pos not in grammar[word.pos]) or (
+          i < len(sentence) - 1 and sentence[i + 1].pos not in grammar[word.pos]):
+        return False
+  return True
+grammar = {
+  "NN": ["NN", "NNS"],  # Nouns can agree with other nouns or plural nouns (simplified)
+  "VBZ": ["NN", "NNS"],  # Verbs (3rd person singular) can agree with singular or plural nouns (simplified)
+}
+sentence = [
+    Word("The", "DT"),
+    Word("dog", "NN"),
+    Word("chased", "VBZ"),
+    Word("the", "DT"),
+    Word("cat", "NN"),
+]
+if check_agreement(sentence, grammar):
+  print("Sentence has agreement.")
+else:
+  print("Sentence does not have agreement.")
