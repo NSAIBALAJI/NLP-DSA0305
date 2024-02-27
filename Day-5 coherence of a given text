@@ -1,0 +1,28 @@
+import spacy
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+nlp = spacy.load("en_core_web_sm")
+def entity_grid_coherence(text):
+  sentences = [sent.text.strip() for sent in nlp(text).sents]
+  unique_entities = set()
+  grid = []
+  for sentence in sentences:
+    entities = [ent.text for ent in nlp(sentence).ents]
+    unique_entities.update(entities)
+    grid.append([1 if entity in entities else 0 for entity in unique_entities])
+  if grid:
+    grid_array = np.array(grid)
+    return np.mean(grid_array.sum(axis=0) / len(unique_entities))
+  else:
+    return 0
+def sentence_similarity_coherence(text):
+  sentences = [sent.text.strip() for sent in nlp(text).sents]
+  vectorizer = CountVectorizer()
+  sentence_vectors = vectorizer.fit_transform(sentences)
+  similarities = cosine_similarity(sentence_vectors[1:], sentence_vectors[:-1]).flatten()
+  return np.mean(similarities) if similarities else 0
+text = """The cat sat on the mat. The dog chased the cat. Cats are cute. Dogs are loyal."""
+entity_coherence = entity_grid_coherence(text)
+similarity_coherence = sentence_similarity_coherence(text)
+print(f"Entity Coherence:  {entity_coherence}")
+print(f"Similarity Coherence:  {similarity_coherence}")
