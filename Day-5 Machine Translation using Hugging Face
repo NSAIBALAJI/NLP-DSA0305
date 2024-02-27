@@ -1,0 +1,9 @@
+pip install transformers datasets
+import torch
+from transformers import pipeline
+model_checkpoint = "facebook/mbart-large-en-fr"
+translator = pipeline("translation", model=model_checkpoint, tokenizer=model_checkpoint)
+english_text = "This is a sentence in English."
+translation_results = translator(english_text, max_length=40)
+french_text = translation_results[0]['translation_text']
+print(f"Translated text (French): {french_text}") 
