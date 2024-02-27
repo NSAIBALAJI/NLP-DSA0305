@@ -1,0 +1,45 @@
+class Node:
+  def __init__(self, data):
+    self.data = data
+    self.children = []
+  def add_child(self, child):
+    self.children.append(child)
+def build_parse_tree(parse, grammar):
+  def find_production(symbol, start, end):
+    for rule in grammar[symbol]:
+      if len(rule) == end - start + 1:
+        return rule
+  def build_tree(symbol, start, end):
+    node = Node(symbol)
+    if symbol in grammar:
+      production = find_production(symbol, start, end)
+      for i in range(1, len(production)):
+        child_symbol = production[i]
+        child_start = start + i - 1
+        child_end = find_child_end(child_symbol, child_start, parse)
+        child_node = build_tree(child_symbol, child_start, child_end)
+        node.add_child(child_node)
+    else:
+      node.data = tokens[start]
+    return node
+  def find_child_end(symbol, start, parse):
+    for i in range(start + 1, len(parse)):
+      if parse[i][0] != symbol:
+        return i - 1
+    return len(parse) - 1
+  tokens = [item[0] for item in parse]
+  start_symbol = parse[0][0]
+  root = build_tree(start_symbol, 0, len(parse) - 1)
+  return root
+grammar = {
+  "S": [["NP", "VP"]],
+  "NP": [["The", "dog"]],
+  "VP": [["chased", "the", "cat"]],
+}
+parse = [("S", 0, 4), ("NP", 0, 1), ("VP", 2, 4), ("The", 0, 1), ("chased", 2, 2), ("the", 3, 3), ("cat", 4, 4)]
+root = build_parse_tree(parse, grammar)
+def print_tree(node, level=0):
+  print(" " * level, node.data)
+  for child in node.children:
+    print_tree(child, level + 2)
+print_tree(root)
