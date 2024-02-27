@@ -1,0 +1,25 @@
+from nltk.corpus import wordnet as wn
+from nltk.tokenize import word_tokenize
+def lesk(context_sentence, ambiguous_word, pos=None):
+  tokens = word_tokenize(context_sentence.lower())
+  senses = wn.synsets(ambiguous_word, pos=pos)
+  max_overlap = 0
+  best_sense = None
+  for sense in senses:
+    definition = sense.definition()
+    lemma_names = [lemma.name() for lemma in sense.lemmas()]
+    overlap = 0
+    for token in tokens:
+      if token in definition or token in lemma_names:
+        overlap += 1
+    if overlap > max_overlap:
+      max_overlap = overlap
+      best_sense = sense
+  return best_sense if best_sense else None
+sentence = "The bank is on the river bank."
+ambiguous_word = "bank"
+most_likely_sense = lesk(sentence, ambiguous_word)
+if most_likely_sense:
+  print("Most likely sense:", most_likely_sense.definition())
+else:
+  print("Sense disambiguation failed.")
