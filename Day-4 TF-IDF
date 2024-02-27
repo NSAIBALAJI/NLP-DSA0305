@@ -1,0 +1,16 @@
+from sklearn.feature_extraction.text import TfidfVectorizer
+documents = [
+  "The quick brown fox jumps over the lazy dog.",
+  "The dog is a mammal. It is a loyal companion.",
+  "Foxes are cunning animals. They are known for their intelligence.",
+]
+query = "What is the fox known for?"
+vectorizer = TfidfVectorizer()
+tfidf_matrix = vectorizer.fit_transform(documents + [query])
+query_vector = tfidf_matrix[-1]
+document_vectors = tfidf_matrix[:-1]
+similarities = query_vector.dot(document_vectors.T).toarray()[0]
+ranked_documents = sorted(zip(documents, similarities), key=lambda x: x[1], reverse=True)
+print("Ranked documents:")
+for document, similarity in ranked_documents:
+  print(f"- {document} (similarity: {similarity:.4f})")
