@@ -1,0 +1,23 @@
+import re
+GRAMMAR = {
+    "expression": r"predicate | expression 'and' expression | '(' expression ')' | 'not' expression",
+    "predicate": r"PREDICATE_NAME\(TERMS\)",
+    "TERMS": r"TERM ',' TERMS | TERM",
+    "TERM": r"CONSTANT_NAME | VARIABLE_NAME"
+}
+def parse(expression):
+    for rule, regex in GRAMMAR.items():
+        match = re.match(regex, expression)
+        if match:
+            groups = match.groups()
+            if groups:  # If there are sub-expressions, parse them recursively
+                return [rule] + [parse(group) for group in groups]
+            else:
+                return [rule]  # Base case: return parsed rule
+    raise ParseError("Invalid expression")
+expression = "P(x) and Q(y, z)"
+try:
+    parsed_expression = parse(expression)
+    print("Parsed expression:", parsed_expression)
+except ParseError as e:
+    print(e)
