@@ -1,0 +1,16 @@
+from nltk.corpus import wordnet
+word = "book"
+synsets = wordnet.synsets(word)
+for synset in synsets:
+  definition = synset.definition()
+  lemmas = [lemma.name() for lemma in synset.lemmas()]
+  print(f"Synset: {synset.name()}")
+  print(f"Definition: {definition}")
+  print(f"Lemmas: {', '.join(lemmas)}")
+  print("------")
+first_synset = synsets[0]
+hypernyms = first_synset.hypernyms()
+if hypernyms:
+  print(f"Hypernym: {hypernyms[0].name()}")
+else:
+  print("No hypernyms found.")
