@@ -1,0 +1,39 @@
+class Item:
+  def __init__(self, symbol, start, end, dot=0):
+    self.symbol = symbol
+    self.start = start
+    self.end = end
+    self.dot = dot  # Position of the dot in the production rule
+  def __str__(self):
+    return f"{self.symbol}, [{self.start}, {self.end}), {self.dot}"
+def predict(chart, grammar, symbol, i):
+  for rule in grammar[symbol]:
+    chart[i].append(Item(rule[0], i, i, 0))
+def scan(chart, tokens, i):
+  if i < len(tokens) and tokens[i] == chart[i][-1].symbol:
+    chart[i].append(Item(chart[i][-1].symbol, i, i, 1))
+def complete(chart, grammar, i):
+  for j in range(i):
+    for item in chart[j]:
+      if item.dot == len(grammar[item.symbol]) and item.end == i:
+        for next_symbol in chart[i]:
+          if next_symbol.symbol == item.symbol and next_symbol.start == j:
+            chart[i].append(Item(next_symbol.symbol, j, i, next_symbol.dot + 1))
+def parse(grammar, tokens):
+  chart = [[] for _ in range(len(tokens) + 1)]
+  start_symbol = list(grammar.keys())[0]
+  predict(chart, grammar, start_symbol, 0)
+  for i in range(len(tokens) + 1):
+    scan(chart, tokens, i)
+    complete(chart, grammar, i)
+  return any(item.symbol == start_symbol and item.dot == len(grammar[start_symbol]) and item.end == len(tokens) for item in chart[-1])
+grammar = {
+  "S": [["NP", "VP"]],
+  "NP": [["The", "dog"], ["An", "apple"]],
+  "VP": [["chased", "the", "cat"]],
+}
+tokens = ["The", "dog", "chased", "the", "cat"]
+if parse(grammar, tokens):
+  print("Sentence parsed successfully.")
+else:
+  print("Sentence parsing failed.")
