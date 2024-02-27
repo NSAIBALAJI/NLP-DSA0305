@@ -1,0 +1,13 @@
+pip install openai
+import openai
+openai.api_key = "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"
+prompt = "Write a poem about the ocean."
+response = openai.Completion.create(
+  engine="text-davinci-003",  # Choose the desired engine, e.g., "text-davinci-003"
+  prompt=prompt,
+  max_tokens=500,
+  n=1,
+  stop=None,
+  temperature=1.0,
+)
+print(response.choices[0].text.strip())
