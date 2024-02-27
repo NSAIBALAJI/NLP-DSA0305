@@ -1,0 +1,17 @@
+import spacy
+nlp = spacy.load("en_core_web_sm")
+def extract_noun_phrases(sentence):
+  noun_phrases = []
+  doc = nlp(sentence)
+  for entity in doc.ents + list(doc.noun_chunks):
+    noun_phrase = {
+      "text": entity.text,
+      "meaning": nlp.vocab.get(entity.root.lemma_).explain(include_examples=False)
+    }
+    noun_phrases.append(noun_phrase)
+  return noun_phrases
+sentence = "The quick brown fox jumps over the lazy dog."
+noun_phrases = extract_noun_phrases(sentence)
+print("Extracted noun phrases with meanings:")
+for phrase in noun_phrases:
+  print(f"- {phrase['text']} ({phrase['meaning']})")
