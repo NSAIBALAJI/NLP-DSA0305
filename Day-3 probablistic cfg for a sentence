@@ -1,0 +1,15 @@
+from nltk.parse import PCFG
+grammar = PCFG.fromstring("""
+S -> NP VP [1.0]
+NP -> DT NN [0.6] | NN [0.4]
+VP -> VBZ NN [0.8] | VBD NP [0.2] 
+DT -> the [1.0]
+NN -> dog [0.5] | cat [0.5]
+VBZ -> jumps [0.8] | sleeps [0.2]
+VBD -> jumped [1.0]
+""")
+sentence = "The dog jumps"
+parser = PCFGParser(grammar)
+parsed_tree = parser.parse(sentence.split())
+for tree in parsed_tree:
+  print(tree.prob(), tree)
