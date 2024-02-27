@@ -1,0 +1,38 @@
+class WordTag:
+    def __init__(self, word, tag):
+        self.word = word
+        self.tag = tag
+class TransformationRule:
+    def __init__(self, condition, transformation):
+        self.condition = condition  # Function that checks the context
+        self.transformation = transformation  # Function that modifies the tag
+sentence = [
+    WordTag("The", "DET"),  
+    WordTag("dog", "NN"),  
+    WordTag("chased", "VBD"),  
+    WordTag("the", "DET"), 
+    WordTag("cat", "NN") 
+]
+def change_det_to_noun(sentence, i):
+    """Example rule: Change DET to NN if the following word is also a noun."""
+    if i + 1 < len(sentence) and sentence[i].tag == "DET" and sentence[i + 1].tag == "NN":
+        return True, "NN"  # Condition met, return new tag
+    else:
+        return False, None  # Condition not met
+transformation_rule = TransformationRule(change_det_to_noun, change_det_to_noun)
+def transform_tags(sentence, rules):
+    for _ in range(len(sentence) * 2):  # Apply rules multiple times
+        changed = False
+        for i in range(len(sentence)):
+            for rule in rules:
+                condition_met, new_tag = rule.condition(sentence, i)
+                if condition_met:
+                    sentence[i].tag = new_tag
+                    changed = True
+        if not changed:
+            break
+    return sentence
+rules = [transformation_rule]
+tagged_sentence = transform_tags(sentence, rules)
+for word_tag in tagged_sentence:
+    print(f"{word_tag.word}/{word_tag.tag}", end=" ")
