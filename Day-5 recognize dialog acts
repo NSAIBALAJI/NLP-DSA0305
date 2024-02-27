@@ -1,0 +1,24 @@
+import spacy
+nlp = spacy.load("en_core_web_sm")
+def recognize_dialog_act(utterance):
+  doc = nlp(utterance.lower())
+  rules = {
+    "greeting": ["hello", "hi", "hey"],
+    "farewell": ["bye", "goodbye", "see you later"],
+    "question": [token.pos_ == "VERB" and token.tag_.endswith("Q") for token in doc],
+    "statement": [not (act in rules for act in rules.keys())],  # Default for unclassified utterances
+  }
+  for act, pattern in rules.items():
+    if any(pattern):
+      return act
+  return None
+conversation = [
+  "Hi, how are you doing?",
+  "I'm doing well, thanks for asking. How about you?",
+  "I'm doing alright. What's the weather like today?",
+  "It's a bit cloudy, but not too bad. What are your plans for the weekend?",
+  "See you later!"
+]
+for utterance in conversation:
+  dialog_act = recognize_dialog_act(utterance)
+  print(f"- {utterance} (Dialog Act: {dialog_act})")
