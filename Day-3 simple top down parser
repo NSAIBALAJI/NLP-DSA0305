@@ -1,0 +1,84 @@
+class Node:
+  """
+  Represents a node in the parse tree.
+  """
+  def __init__(self, data):
+    self.data = data
+    self.children = []
+
+  def add_child(self, child):
+    self.children.append(child)
+
+def parse(grammar, tokens):
+  """
+  Parses a sequence of tokens based on the given grammar.
+
+  Args:
+    grammar: A dictionary where keys are non-terminal symbols and values are lists of production rules (lists of symbols).
+    tokens: A list of terminal symbols (tokens).
+
+  Returns:
+    The root node of the parse tree, or None if parsing fails.
+  """
+  # Function to check if a token matches a terminal symbol
+  def match(token, symbol):
+    return token == symbol
+
+  # Recursive function to parse a symbol
+  def parse_symbol(symbol, tokens):
+    if symbol in grammar:
+      # Try each production rule for the symbol
+      for rule in grammar[symbol]:
+        # Create a node for the current symbol
+        node = Node(symbol)
+        # Check if all elements in the rule match corresponding tokens
+        success = True
+        for child_symbol in rule:
+          if child_symbol in grammar:
+            # Parse child symbol recursively
+            child_node = parse_symbol(child_symbol, tokens)
+            if child_node is None:
+              success = False
+              break
+            node.add_child(child_node)
+          else:
+            # Match terminal symbol with token
+            if not match(tokens[0], child_symbol):
+              success = False
+              break
+            # Consume the matched token
+            tokens.pop(0)
+        if success:
+          return node
+      # No matching rule found
+      return None
+    else:
+      # Symbol not found in grammar
+      return None
+
+  # Start parsing from the start symbol
+  start_symbol = list(grammar.keys())[0]
+  root = parse_symbol(start_symbol, tokens)
+  # Check if all tokens were consumed and parsing succeeded
+  return root if not tokens else None
+
+# Example grammar and tokens
+grammar = {
+  "S": [["NP", "VP"]],
+  "NP": [["The", "dog"], ["An", "apple"]],
+  "VP": [["chased", "the", "cat"]],
+}
+tokens = ["The", "dog", "chased", "the", "cat"]
+
+# Parse the sentence
+root = parse(grammar, tokens)
+
+# Print the parse tree (in a simple format)
+if root is not None:
+  def print_tree(node, level=0):
+    print(" " * level, node.data)
+    for child in node.children:
+      print_tree(child, level + 2)
+  print_tree(root)
+else:
+  print("Parsing failed.")
