@@ -1,13 +1,13 @@
 pip install openai
-import openai
-openai.api_key = "enter your api here"
-prompt = "Write a poem about the ocean."
-response = openai.Completion.create(
-  engine="text-davinci-003",  # Choose the desired engine, e.g., "text-davinci-003"
-  prompt=prompt,
-  max_tokens=500,
-  n=1,
-  stop=None,
-  temperature=1.0,
+from openai import OpenAI
+client = OpenAI(api_key="enter your api here")
+response = client.chat.completions.create(
+  model="gpt-3.5-turbo",
+  messages=[
+    {
+      "role": "user",
+      "content": "how to make money?"
+    }
+  ]
 )
-print(response.choices[0].text.strip())
+print(response.choices[0].message.content)
